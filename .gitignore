@@ -1,0 +1,4 @@
+tests
+test_ftp.sh
+*.o
+.vscode
