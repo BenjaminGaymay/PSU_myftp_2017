@@ -11,8 +11,7 @@
 
 typedef struct s_data_transfert_info {
 	char *ip;
-	int port_1;
-	int port_2;
+	int port;
 	int com;
 	int data_transfert;
 } t_data_transfert_info;

@@ -15,4 +15,4 @@ typedef enum {
 } e_socket_type;
 
 int safe_close(const int, const int);
-int create_socket(const int, const in_addr_t, e_socket_type s_t);
+int create_socket(const int, const in_addr_t, e_socket_type s_t, int);

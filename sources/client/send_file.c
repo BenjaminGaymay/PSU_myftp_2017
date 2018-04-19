@@ -8,9 +8,12 @@
 #include "client.h"
 #include "macro.h"
 
-void connect_data_transfert_socket(t_data_transfert_info *infos)
+int connect_data_transfert_socket(t_data_transfert_info *infos)
 {
-	infos->data_transfert = create_socket(infos->port_1, inet_addr(infos->ip), CLIENT);
+	infos->data_transfert = create_socket(infos->port, inet_addr(infos->ip), CLIENT, VERBOSE);
+	if (infos->data_transfert == FD_ERROR)
+		return (ERROR);
+	return (SUCCESS);
 }
 
 int receive_cmd(char *cmd, char *reply, t_data_transfert_info *infos)
@@ -19,7 +22,8 @@ int receive_cmd(char *cmd, char *reply, t_data_transfert_info *infos)
 
 	(void)cmd;
 	(void)reply;
-	connect_data_transfert_socket(infos);
+	if (connect_data_transfert_socket(infos) == ERROR)
+		return (ERROR);
 	read_file(NULL, infos->data_transfert);
 	wait_reply(infos->com, &line);
 	return (free(line), SUCCESS);

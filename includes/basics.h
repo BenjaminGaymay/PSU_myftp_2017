@@ -18,6 +18,7 @@
 #include <netinet/in.h>
 #include <string.h>
 #include <ctype.h>
+#include <time.h>
 
 char *replace_char(char *, const char, const char);
 int read_file(const char *, const int);

@@ -72,7 +72,7 @@ int main(const int ac, char **av)
 
 	if (ac != 3)
 		return (ERROR);
-	com = create_socket(atoi(av[2]), inet_addr(av[1]), CLIENT);
+	com = create_socket(atoi(av[2]), inet_addr(av[1]), CLIENT, VERBOSE);
 	if (com == FD_ERROR || client_loop(com) == ERROR)
 		return (safe_close(com, ERROR));
 	return (safe_close(com, SUCCESS));

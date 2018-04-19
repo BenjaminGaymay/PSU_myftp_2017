@@ -15,10 +15,13 @@ int safe_close(const int fd, const int ret)
 	return (ret);
 }
 
-int s_socket(int fd, struct sockaddr_in *s_in)
+int s_socket(int fd, struct sockaddr_in *s_in, int quiet)
 {
-	if (bind(fd, (const struct sockaddr *)s_in, sizeof(*s_in)) == -1)
-		return (FCT_FAIL("bind"), safe_close(fd, FD_ERROR));
+	if (bind(fd, (const struct sockaddr *)s_in, sizeof(*s_in)) == -1) {
+		if (quiet == VERBOSE)
+			FCT_FAIL("bind");
+		return (safe_close(fd, FD_ERROR));
+	}
 	if (listen(fd, 42) == -1)
 		return (FCT_FAIL("listen"), safe_close(fd, FD_ERROR));
 	return (fd);
@@ -31,7 +34,7 @@ int c_socket(int fd, struct sockaddr_in *s_in)
 	return (fd);
 }
 
-int create_socket(const int port, const in_addr_t addr, e_socket_type s_t)
+int create_socket(const int port, const in_addr_t addr, e_socket_type s_t, int quiet)
 {
 	int fd;
 	struct protoent *pe;
@@ -46,5 +49,5 @@ int create_socket(const int port, const in_addr_t addr, e_socket_type s_t)
 	s_in.sin_family = AF_INET;
 	s_in.sin_port = htons(port);
 	s_in.sin_addr.s_addr = addr;
-	return (s_t == SERVER ? s_socket(fd, &s_in) : c_socket(fd, &s_in));
+	return (s_t == SERVER ? s_socket(fd, &s_in, quiet) : c_socket(fd, &s_in));
 }

@@ -17,6 +17,9 @@
 #define CONNECT 0
 #define PASSWORD 1
 
+#define QUIET 0
+#define VERBOSE 1
+
 #define FCT_FAIL(name) fprintf(stderr, "Error: %s failed\n", name)
 
 #define CONNECT_OPEN "150 File status okay; about to open data connection."

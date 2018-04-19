@@ -41,9 +41,10 @@ int get_port_from_cmd(char *cmd, int pos)
 
 int pasv(char *cmd, char *reply, t_data_transfert_info *infos)
 {
+	int port_2 = get_port_from_cmd(reply, 1);
+	int port_1 = get_port_from_cmd(reply, 0);
 	(void)cmd;
-	infos->port_2 = get_port_from_cmd(reply, 1);
-	infos->port_1 = get_port_from_cmd(reply, 0);
+	infos->port = port_1 * 256 + port_2;
 	infos->ip = strdup(get_ip_from_cmd(reply));
 	if (! infos->ip)
 		return (FCT_FAIL("strdup"), ERROR);

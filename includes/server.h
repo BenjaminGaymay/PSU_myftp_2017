@@ -10,9 +10,11 @@
 #include "socket.h"
 
 typedef struct s_user_infos {
-	char *ip;
+	char *server_ip;
+	char *client_ip;
 	int server_port;
 	int user_port;
+	int datas_transfert_port;
 	char *login;
 	int connected;
 	int data_transfert_socket;
