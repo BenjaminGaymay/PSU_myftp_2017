@@ -36,7 +36,7 @@ t_ptr_fct *get_cmd_ptr()
 
 }
 
-int get_command(const int com, int *connected)
+int get_command(const int com, t_user_infos *user)
 {
 	size_t len = 0;
 	char *line = NULL;
@@ -55,7 +55,7 @@ int get_command(const int com, int *connected)
 			line[strlen(line) - 2] = '\0';
 		if (strncmp(line, tmp.name, strlen(tmp.name)) == SUCCESS) {
 			cpy = &line[strlen(tmp.name) + (line[strlen(tmp.name)] == ' ' ? 1 : 0)];
-			ret_value = tmp.fct(com, cpy, connected);
+			ret_value = tmp.fct(com, cpy, user);
 			return (free(line), ret_value);
 		}
 	}

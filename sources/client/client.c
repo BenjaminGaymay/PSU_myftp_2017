@@ -8,7 +8,15 @@
 #include "client.h"
 #include "macro.h"
 
-int wait_reply(const int com)
+int is_reply_end(const char *line)
+{
+	for (int i = 0 ; line[i] && i < 3 ; i++)
+		if (isdigit(line[i]) == 0)
+			return (FAILURE);
+	return (SUCCESS);
+}
+
+int wait_reply(const int com, char **reply)
 {
 	size_t len = 0;
 	char *line = NULL;
@@ -16,12 +24,14 @@ int wait_reply(const int com)
 
 	if (! file)
 		return (FCT_FAIL("fdopen"), ERROR);
-	getline(&line, &len, file);
+	while (getline(&line, &len, file) && is_reply_end(line) == FAILURE) {
+		if (line[0] != '\n')
+			write(1, line, strlen(line));
+	}
+
 	write(1, line, strlen(line));
-	for (int i = 0 ; line[i] && i < 3 ; i++)
-		if (isdigit(line[i]) == 0)
-			return (ERROR);
 	if (line[3] == ' ') {
+		*reply = strdup(line);
 		line[3] = '\0';
 		return (atoi(line));
 	}
@@ -32,21 +42,25 @@ int wait_reply(const int com)
 int client_loop(const int com)
 {
 	char *cmd;
+	char *reply;
 	int reply_state;
+	t_data_transfert_info infos;
 
-	reply_state = wait_reply(com);
+	infos.com = com;
+	reply_state = wait_reply(com, &reply);
 	if (reply_state == ERROR || reply_state == 421)
 		return (ERROR);
+	free(reply);
 	while (1) {
 		cmd = get_command(com);
 		if (cmd == NULL)
 			return (ERROR);
-		reply_state = wait_reply(com);
+		reply_state = wait_reply(com, &reply);
 		if (reply_state == 221 || reply_state == ERROR)
 			return (reply_state);
 		else if (reply_state == FAILURE)
 			fprintf(stderr, "Error: %s: bad command\n", cmd);
-		else if (make_command(com, cmd) == ERROR)
+		else if (reply_state != 421 && make_command(cmd, reply, &infos) == ERROR)
 			return (ERROR);
 	}
 	return (SUCCESS);

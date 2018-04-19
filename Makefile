@@ -16,12 +16,14 @@ SRCS_CLIENT	= ./sources/client/client.c		\
 		  ./sources/client/manage_commands.c	\
 		  ./sources/client/send_file.c		\
 		  ./sources/client/commands.c		\
+		  ./sources/shared/basics.c		\
 		  ./sources/shared/socket.c
 
 SRCS_SERVER	= ./sources/server/server.c		\
 		  ./sources/server/manage_commands.c	\
 		  ./sources/server/commands.c		\
 		  ./sources/server/help.c		\
+		  ./sources/shared/basics.c		\
 		  ./sources/shared/socket.c
 
 OBJS_CLIENT	= $(SRCS_CLIENT:.c=.o)

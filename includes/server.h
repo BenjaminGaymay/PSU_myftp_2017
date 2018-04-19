@@ -7,12 +7,20 @@
 
 #pragma once
 
-#define _GNU_SOURCE
 #include "socket.h"
+
+typedef struct s_user_infos {
+	char *ip;
+	int server_port;
+	int user_port;
+	char *login;
+	int connected;
+	int data_transfert_socket;
+} t_user_infos;
 
 typedef struct s_ptr_fct {
 	char *name;
-	int (*fct)(const int, char *, int *);
+	int (*fct)(const int, char *, t_user_infos *);
 	char *help;
 } t_ptr_fct;
 
@@ -21,19 +29,19 @@ int print_usage(int);
 
 t_ptr_fct *get_cmd_ptr();
 void send_reply(const int, const char *);
-int get_command(const int, int *);
+int get_command(const int, t_user_infos *);
 
-int login(const int, char *, int *);
-int password(const int, char *, int *);
-int do_cwd(const int, char *, int *);
-int cdup(const int, char *, int *);
-int exit_ftp(const int, char *, int *);
-int delete_file(const int, char *, int *);
-int do_pwd(const int, char *, int *);
-int port(const int, char *, int *);
-int pasv(const int, char *, int *);
-int show_help(const int, char*, int *);
-int noop(const int, char *, int *);
-int receive_file(const int, char *, int *);
-int send_file(const int, char *, int *);
-int do_ls(const int, char *, int *);
+int login(const int, char *, t_user_infos *);
+int password(const int, char *, t_user_infos *);
+int do_cwd(const int, char *, t_user_infos *);
+int cdup(const int, char *, t_user_infos *);
+int exit_ftp(const int, char *, t_user_infos *);
+int delete_file(const int, char *, t_user_infos *);
+int do_pwd(const int, char *, t_user_infos *);
+int port(const int, char *, t_user_infos *);
+int pasv(const int, char *, t_user_infos *);
+int show_help(const int, char*, t_user_infos *);
+int noop(const int, char *, t_user_infos *);
+int receive_file(const int, char *, t_user_infos *);
+int send_file(const int, char *, t_user_infos *);
+int do_ls(const int, char *, t_user_infos *);
