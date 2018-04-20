@@ -10,10 +10,16 @@
 
 int connect_data_transfert_socket(t_data_transfert_info *infos)
 {
+	struct sockaddr_in server;
+	socklen_t server_size;
+
+	server_size = sizeof(server);
+	if (infos->transfert_mode == PORT) {
+		infos->data_transfert = accept(infos->serv_mode, (struct sockaddr *)&server, &server_size);
+		return (SUCCESS);
+	}
 	infos->data_transfert = create_socket(infos->port, inet_addr(infos->ip), CLIENT, VERBOSE);
-	if (infos->data_transfert == FD_ERROR)
-		return (ERROR);
-	return (SUCCESS);
+	return (infos->data_transfert == FD_ERROR ? ERROR : SUCCESS);
 }
 
 int receive_cmd(char *cmd, char *reply, t_data_transfert_info *infos)

@@ -10,14 +10,16 @@
 #include "socket.h"
 
 typedef struct s_user_infos {
+	char *root;
 	char *server_ip;
 	char *client_ip;
 	int server_port;
-	int user_port;
+	int client_port;
 	int datas_transfert_port;
 	char *login;
 	int connected;
 	int data_transfert_socket;
+	e_transfert_mode transfert_mode;
 } t_user_infos;
 
 typedef struct s_ptr_fct {

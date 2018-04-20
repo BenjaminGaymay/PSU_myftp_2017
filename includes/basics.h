@@ -22,3 +22,5 @@
 
 char *replace_char(char *, const char, const char);
 int read_file(const char *, const int);
+char *get_ip_from_cmd(char *);
+int get_port_from_cmd(char *, int);

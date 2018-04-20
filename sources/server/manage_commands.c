@@ -55,7 +55,7 @@ int get_command(const int com, t_user_infos *user)
 			line[strlen(line) - 2] = '\0';
 		else if (line[strlen(line) - 1] == '\n')
 			line[strlen(line) - 1] = '\0';
-		if (strncmp(line, tmp.name, strlen(tmp.name)) == SUCCESS) {
+		if (strncasecmp(line, tmp.name, strlen(tmp.name)) == SUCCESS) {
 			cpy = &line[strlen(tmp.name) + (line[strlen(tmp.name)] == ' ' ? 1 : 0)];
 			ret_value = tmp.fct(com, cpy, user);
 			return (free(line), ret_value);

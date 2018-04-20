@@ -6,7 +6,7 @@
 ##
 
 NAME_SERVER	= server
-NAME_CLIENT	= client
+NAME_CLIENT	= my_ftp
 
 CC	= gcc
 

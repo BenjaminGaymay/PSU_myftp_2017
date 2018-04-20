@@ -34,23 +34,31 @@ int password(const int com, char *pass, t_user_infos *user)
 
 int do_cwd(const int com, char *cmd, t_user_infos *user)
 {
+	char *old_pwd = getcwd(NULL, 0);
+
 	if (user->connected != CONNECT)
 		return (send_reply(com, NOT_CONNECTED), FAILURE);
 	if (chdir(cmd) == -1)
 		return (send_reply(com, BAD_PATH), FAILURE);
-	send_reply(com, FILE_OKAY);
-	return (SUCCESS);
+	if (strncmp(user->root, getcwd(NULL, 0), strlen(user->root)) == 0)
+		return (send_reply(com, FILE_OKAY), SUCCESS);
+	chdir(old_pwd);
+	return (send_reply(com, PERM_DENIED), FAILURE);
 }
 
 int cdup(const int com, char *cmd, t_user_infos *user)
 {
+	char *old_pwd = getcwd(NULL, 0);
+
 	(void)cmd;
 	if (user->connected != CONNECT)
 		return (send_reply(com, NOT_CONNECTED), FAILURE);
 	if (chdir("..") == -1)
 		return (send_reply(com, BAD_PATH), FAILURE);
-	send_reply(com, CMD_OKAY);
-	return (SUCCESS);
+	if (strncmp(user->root, getcwd(NULL, 0), strlen(user->root)) == 0)
+		return (send_reply(com, FILE_OKAY), SUCCESS);
+	chdir(old_pwd);
+	return (send_reply(com, PERM_DENIED), FAILURE);
 }
 
 int exit_ftp(const int com, char *cmd, t_user_infos *user)
@@ -72,58 +80,39 @@ int delete_file(const int com, char *file, t_user_infos *user)
 
 int do_pwd(const int com, char *cmd, t_user_infos *user)
 {
-	FILE *stream;
-	char *path = NULL;
 	char *reply;
-	size_t len = 0;
 
 	(void)cmd;
 	if (user->connected != CONNECT)
 		return (send_reply(com, NOT_CONNECTED), FAILURE);
 
-	stream = popen("pwd", "r");
-	if (! stream)
-		return (FCT_FAIL("popen"), ERROR);
-	getline(&path, &len, stream);
-	path[strlen(path) - 1] = '\0';
-	asprintf(&reply, "257 \"%s\"\n", path);
+	asprintf(&reply, "257 \"%s\"\n", getcwd(NULL, 0));
 	if (! reply)
 		return (FCT_FAIL("asprintf"), ERROR);
-	if (pclose(stream) == -1)
-		return (FCT_FAIL("pclose"), ERROR);
 	send_reply(com, reply);
 	free(reply);
-	free(path);
 	return (SUCCESS);
 }
 
 int port(const int com, char *cmd, t_user_infos *user)
 {
-	(void)cmd;
+	int port_1;
+	int port_2;
+
+	close(user->data_transfert_socket);
+	user->data_transfert_socket = FD_ERROR;
 	if (user->connected != CONNECT)
 		return (send_reply(com, NOT_CONNECTED), FAILURE);
 	printf(" ~ Active mode enable for datas transfert\n");
+	port_2 = get_port_from_cmd(cmd, 1);
+	port_1 = get_port_from_cmd(cmd, 0);
+	user->datas_transfert_port = port_1 * 256 + port_2;
+	user->client_ip = strdup(get_ip_from_cmd(cmd));
+	if (! user->client_ip)
+		return (send_reply(com, CONNECT_FAIL), FAILURE);
 	send_reply(com, CMD_OKAY);
+	user->transfert_mode = PORT;
 	return (SUCCESS);
-}
-
-int port_is_free(const int port_1, const int port_2)
-{
-	struct sockaddr_in sin;
-	int fd;
-
-	fd = socket(AF_INET, SOCK_STREAM, 0);
-	if(fd == FD_ERROR)
-  		return (FCT_FAIL("socket"), ERROR);
-
-	sin.sin_port = htons(port_1 * 256 + port_2);
-	sin.sin_addr.s_addr = 0;
-	sin.sin_addr.s_addr = INADDR_ANY;
-	sin.sin_family = AF_INET;
-
-	if (bind(fd, (struct sockaddr *)&sin, sizeof(struct sockaddr_in)) == FD_ERROR)
-  		return (close(fd), FAILURE);
-  	return (close(fd), SUCCESS);
 }
 
 int pasv(const int com, char *cpy_ip, t_user_infos *user)
@@ -150,6 +139,7 @@ int pasv(const int com, char *cpy_ip, t_user_infos *user)
 	if (! reply)
 		return (FCT_FAIL("asprintf"), ERROR);
 	send_reply(com, reply);
+	user->transfert_mode = PASV;
 	free(reply);
 	return (SUCCESS);
 }
@@ -180,13 +170,22 @@ int noop(const int com, char *cmd, t_user_infos *user)
 	return (SUCCESS);
 }
 
-int get_data_transfert_socket(t_user_infos *user)
+int get_data_transfert_socket(const int com, t_user_infos *user)
 {
 	struct sockaddr_in client;
 	socklen_t client_size;
+	int socket;
 
 	client_size = sizeof(client);
-	return (accept(user->data_transfert_socket, (struct sockaddr *)&client, &client_size));
+	if (user->transfert_mode == PASV) {
+		send_reply(com, CONNECT_OPEN);
+		return (accept(user->data_transfert_socket, (struct sockaddr *)&client, &client_size));
+	}
+	socket = create_socket(user->datas_transfert_port, inet_addr(user->client_ip), CLIENT, VERBOSE);
+	if (socket == FD_ERROR)
+		return (send_reply(com, CONNECT_FAIL), FAILURE);
+	send_reply(com, CONNECT_OPEN);
+	return (socket);
 }
 
 int receive_file(const int com, char *cmd, t_user_infos *user)
@@ -195,11 +194,11 @@ int receive_file(const int com, char *cmd, t_user_infos *user)
 
 	if (user->connected != CONNECT)
 		return (send_reply(com, NOT_CONNECTED), FAILURE);
-	if (user->data_transfert_socket == FD_ERROR)
+	if (user->transfert_mode == NONE)
 		return (send_reply(com, REQUEST_PORT), FAILURE);
-	send_reply(com, CONNECT_OPEN);
-
-	socket = get_data_transfert_socket(user);
+	socket = get_data_transfert_socket(com, user);
+	if (socket == FD_ERROR)
+		return (FAILURE);
 	printf(" > Client %s connected with datas transfert socket on port %d\n", user->server_ip, user->datas_transfert_port);
 	read_file(NULL, socket);
 	printf(" ~ File \"%s\" received from %s on port %d\n", cmd, user->server_ip, user->datas_transfert_port);
@@ -214,11 +213,11 @@ int send_file(const int com, char *cmd, t_user_infos *user)
 
 	if (user->connected != CONNECT)
 		return (send_reply(com, NOT_CONNECTED), FAILURE);
-	if (user->data_transfert_socket == FD_ERROR)
+	if (user->transfert_mode == NONE)
 		return (send_reply(com, REQUEST_PORT), FAILURE);
-	send_reply(com, CONNECT_OPEN);
-
-	socket = get_data_transfert_socket(user);
+	socket = get_data_transfert_socket(com, user);
+	if (socket == FD_ERROR)
+		return (FAILURE);
 	printf(" > Client %s connected with datas transfert socket on port %d\n", user->server_ip, user->datas_transfert_port);
 	if (access(cmd, F_OK) == -1) {
 		close (socket);
@@ -243,11 +242,11 @@ int do_ls(const int com, char *cmd, t_user_infos *user)
 	(void)cmd;
 	if (user->connected != CONNECT)
 		return (send_reply(com, NOT_CONNECTED), FAILURE);
-	if (user->data_transfert_socket == FD_ERROR)
+	if (user->transfert_mode == NONE)
 		return (send_reply(com, REQUEST_PORT), FAILURE);
-
-	send_reply(com, CONNECT_OPEN);
-	socket = get_data_transfert_socket(user);
+	socket = get_data_transfert_socket(com, user);
+	if (socket == FD_ERROR)
+		return (FAILURE);
 	printf(" > Client %s connected with datas transfert socket on port %d\n", user->server_ip, user->datas_transfert_port);
 
 	stream = popen("ls --color", "r");

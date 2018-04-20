@@ -39,7 +39,9 @@
 #define BAD_PATH "421 Bad path."
 #define REQUEST_PORT "421 PASV or PORT requested."
 #define ALREADY_CONNECTED "421 Already connected."
+#define CONNECT_FAIL "421 Connection failed."
 #define NOT_CONNECTED "421 You are not connected."
+#define PERM_DENIED "421 Permission denied."
 
 #define HELP_USER "\tUSER <SP> <username> <CRLF>   : Specify user for authentication"
 #define HELP_PASS "\tPASS <SP> <password> <CRLF>   : Specify password for authentication"

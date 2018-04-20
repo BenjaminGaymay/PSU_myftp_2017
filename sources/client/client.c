@@ -10,9 +10,22 @@
 
 int is_reply_end(const char *line)
 {
-	for (int i = 0 ; line[i] && i < 3 ; i++)
+	int i = 0;
+	for ( ; line[i] && i < 3 ; i++)
 		if (isdigit(line[i]) == 0)
 			return (FAILURE);
+	return (line[i] == ' ' || line[i] == '\0' ? SUCCESS : FAILURE);
+}
+
+int server_open(const int com)
+{
+	int result;
+	socklen_t result_size;
+
+	result_size = sizeof(result);
+	getsockopt(com, SOL_SOCKET, SO_ERROR, &result, &result_size);
+	if (result != 0)
+		return (fprintf(stderr, "Error: server down\n"), ERROR);
 	return (SUCCESS);
 }
 
@@ -24,7 +37,11 @@ int wait_reply(const int com, char **reply)
 
 	if (! file)
 		return (FCT_FAIL("fdopen"), ERROR);
+	if (server_open(com) == ERROR)
+		return (ERROR);
 	while (getline(&line, &len, file) && is_reply_end(line) == FAILURE) {
+		if (server_open(com) == ERROR)
+			return (ERROR);
 		if (line[0] != '\n')
 			write(1, line, strlen(line));
 	}
@@ -44,9 +61,14 @@ int client_loop(const int com)
 	char *cmd;
 	char *reply;
 	int reply_state;
-	t_data_transfert_info infos;
-
-	infos.com = com;
+	t_data_transfert_info infos = {
+		NULL,
+		0,
+		com,
+		FD_ERROR,
+		FD_ERROR,
+		NONE
+	};
 	reply_state = wait_reply(com, &reply);
 	if (reply_state == ERROR || reply_state == 421)
 		return (ERROR);
