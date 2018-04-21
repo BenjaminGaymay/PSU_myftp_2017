@@ -23,6 +23,9 @@ SRCS_SERVER	= ./sources/server/server.c		\
 		  ./sources/server/manage_commands.c	\
 		  ./sources/server/commands.c		\
 		  ./sources/server/help.c		\
+		  ./sources/server/transfert_data.c	\
+		  ./sources/server/connection_mode.c	\
+		  ./sources/server/basics_cmd.c		\
 		  ./sources/shared/basics.c		\
 		  ./sources/shared/socket.c
 

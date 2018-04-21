@@ -36,30 +36,40 @@ t_ptr_fct *get_cmd_ptr()
 
 }
 
+char *clear_command(char *cmd)
+{
+	if (cmd[strlen(cmd) - 1] == '\n' && cmd[strlen(cmd) - 2] == '\r')
+		cmd[strlen(cmd) - 2] = '\0';
+	else if (cmd[strlen(cmd) - 1] == '\n')
+		cmd[strlen(cmd) - 1] = '\0';
+	return (cmd);
+}
+
+int exec_command(const int com, t_user_infos *user, t_ptr_fct *fct, char *cmd)
+{
+	char *cmd_cpy = &cmd[strlen(fct->name) + (cmd[strlen(fct->name)] == ' ' ? 1 : 0)];
+	int ret_value = fct->fct(com, cmd_cpy, user);
+
+	free(cmd);
+	return (ret_value);
+}
+
 int get_command(const int com, t_user_infos *user)
 {
 	size_t len = 0;
-	char *line = NULL;
-	char *cpy;
+	char *cmd = NULL;
 	FILE *file = fdopen(com, "r");
-	int ret_value = FAILURE;
-	t_ptr_fct tmp;
+	t_ptr_fct fct;
 	t_ptr_fct *commands = get_cmd_ptr();
 
 	if (! file)
 		return (FCT_FAIL("fdopen"), ERROR);
-	getline(&line, &len, file);
+	getline(&cmd, &len, file);
 	for (int i = 18 ; i >= 0 ; i--) {
-		tmp = commands[i];
-		if (line[strlen(line) - 1] == '\n' && line[strlen(line) - 2] == '\r')
-			line[strlen(line) - 2] = '\0';
-		else if (line[strlen(line) - 1] == '\n')
-			line[strlen(line) - 1] = '\0';
-		if (strncasecmp(line, tmp.name, strlen(tmp.name)) == SUCCESS) {
-			cpy = &line[strlen(tmp.name) + (line[strlen(tmp.name)] == ' ' ? 1 : 0)];
-			ret_value = tmp.fct(com, cpy, user);
-			return (free(line), ret_value);
-		}
+		fct = commands[i];
+		cmd = clear_command(cmd);
+		if (strncasecmp(cmd, fct.name, strlen(fct.name)) == SUCCESS)
+			return (exec_command(com, user, &fct, cmd));
 	}
 	return (send_reply(com, BAD_CMD), FAILURE);
 }

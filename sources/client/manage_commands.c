@@ -11,8 +11,8 @@
 t_ptr_fct commands[8] = {
 	{"STOR", send_file},
 	{"put", send_file},
-	{"RETR", receive_cmd},
-	{"get", receive_cmd},
+	{"RETR", receive_file},
+	{"get", receive_file},
 	{"LIST", receive_cmd},
 	{"ls", receive_cmd},
 	{"PASV", pasv},
@@ -53,7 +53,7 @@ int make_command(char *cmd, char *reply, t_data_transfert_info *infos)
 	for (int i = 0 ; i < 8 ; i++) {
 		tmp = commands[i];
 		if (strncasecmp(cmd, tmp.name, strlen(tmp.name)) == SUCCESS)
-			return (tmp.fct(cmd, reply, infos));
+			return (tmp.fct(&cmd[strlen(tmp.name) + 1], reply, infos));
 	}
 	free(reply);
 	return (FAILURE);

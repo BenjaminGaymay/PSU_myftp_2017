@@ -10,6 +10,7 @@
 #define _GNU_SOURCE
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <fcntl.h>
 #include <netdb.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -22,5 +23,6 @@
 
 char *replace_char(char *, const char, const char);
 int read_file(const char *, const int);
+int create_file(const char *, const int);
 char *get_ip_from_cmd(char *);
 int get_port_from_cmd(char *, int);

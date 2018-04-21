@@ -35,10 +35,23 @@ int receive_cmd(char *cmd, char *reply, t_data_transfert_info *infos)
 	return (free(line), SUCCESS);
 }
 
+int receive_file(char *cmd, char *reply, t_data_transfert_info *infos)
+{
+	char *line = NULL;
+
+	(void)cmd;
+	(void)reply;
+	if (connect_data_transfert_socket(infos) == ERROR)
+		return (ERROR);
+	create_file(cmd, infos->data_transfert);
+	wait_reply(infos->com, &line);
+	return (free(line), SUCCESS);
+}
+
 int send_file(char *cmd, char *reply, t_data_transfert_info *infos)
 {
 	char *tmp;
-	char *path = strndup(&cmd[5], strlen(&cmd[5]));
+	char *path = strndup(cmd, strlen(cmd));
 
 	(void)reply;
 	connect_data_transfert_socket(infos);

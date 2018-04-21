@@ -71,3 +71,20 @@ int read_file(const char *path, const int fd)
 	free(line);
 	return (SUCCESS);
 }
+
+int create_file(const char *path, const int fd)
+{
+	FILE *stream;
+	size_t len = 0;
+	char *line = NULL;
+	int file_fd;
+
+	stream = fdopen(fd, "r");
+	if (! stream)
+		return (FCT_FAIL("fdopen"), ERROR);
+	file_fd = open(path, O_WRONLY | O_CREAT, 0644);
+	while (getline(&line, &len, stream) != -1)
+		write(file_fd, line, strlen(line));
+	close(file_fd);
+	return (SUCCESS);
+}

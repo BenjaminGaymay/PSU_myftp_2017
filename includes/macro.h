@@ -27,7 +27,6 @@
 #define HELP "214 Help message."
 #define READY "220 Service ready for new user."
 #define LOGOUT "221 Service closing control connection."
-#define FILE_NOT_EXIST "226 Permission denied, closing data connection."
 #define CLOSE_CONNECTION "226 Closing data connection."
 #define CONNECTED "230 User logged in, proceed."
 #define FILE_OKAY "250 Requested file action okay, completed."
@@ -41,6 +40,8 @@
 #define ALREADY_CONNECTED "421 Already connected."
 #define CONNECT_FAIL "421 Connection failed."
 #define NOT_CONNECTED "421 You are not connected."
+#define FILE_ERROR "421 File couldn't be create."
+#define FILE_NOT_EXIST "421 Permission denied, closing data connection."
 #define PERM_DENIED "421 Permission denied."
 
 #define HELP_USER "\tUSER <SP> <username> <CRLF>   : Specify user for authentication"
