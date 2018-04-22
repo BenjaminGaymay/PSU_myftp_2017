@@ -8,18 +8,32 @@
 #include "client.h"
 #include "macro.h"
 
-int connect_data_transfert_socket(t_data_transfert_info *infos)
+static int connect_data_transfert_socket(t_data_transfert_info *infos)
 {
 	struct sockaddr_in server;
 	socklen_t server_size;
 
 	server_size = sizeof(server);
 	if (infos->transfert_mode == PORT) {
-		infos->data_transfert = accept(infos->serv_mode, (struct sockaddr *)&server, &server_size);
+		infos->data_transfert = accept(infos->serv_mode,
+			(struct sockaddr *)&server, &server_size);
 		return (SUCCESS);
 	}
-	infos->data_transfert = create_socket(infos->port, inet_addr(infos->ip), CLIENT, VERBOSE);
+	infos->data_transfert = create_socket(infos->port,
+		inet_addr(infos->ip), CLIENT, VERBOSE);
 	return (infos->data_transfert == FD_ERROR ? ERROR : SUCCESS);
+}
+
+static int check_access(char *path, char *reply, t_data_transfert_info *infos)
+{
+	if (access(path, F_OK) != -1)
+		return (SUCCESS);
+	close (infos->data_transfert);
+	fprintf(stderr, "Error: file '%s' doesn't exist\n", path);
+	wait_reply(infos->com, &reply);
+	free(path);
+	free(reply);
+	return (FAILURE);
 }
 
 int receive_cmd(char *cmd, char *reply, t_data_transfert_info *infos)
@@ -57,12 +71,8 @@ int send_file(char *cmd, char *reply, t_data_transfert_info *infos)
 	connect_data_transfert_socket(infos);
 	if (! path)
 		return (FCT_FAIL("strndup"), ERROR);
-	if (access(path, F_OK) == -1) {
-		close (infos->data_transfert);
-		fprintf(stderr, "Error: file '%s' doesn't exist\n", path);
-		wait_reply(infos->com, &tmp);
-		return (free(path), free(tmp), FAILURE);
-	}
+	if (check_access(path, tmp, infos) == FAILURE)
+		return (FAILURE);
 	if (infos->data_transfert == FD_ERROR)
 		return (ERROR);
 	read_file(path, infos->data_transfert);

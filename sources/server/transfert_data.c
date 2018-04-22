@@ -76,6 +76,17 @@ int send_file(const int com, char *cmd, t_user_infos *user)
 	return (close_connection(com, socket, user));
 }
 
+char *get_ls_path_name(char *cmd)
+{
+	int i = 0;
+
+	for ( ; cmd[i] ; i++)
+		if (cmd[i] == ';' || cmd[i] == ' ')
+			break;
+	cmd[i] = '\0';
+	return (cmd);
+}
+
 int do_ls(const int com, char *cmd, t_user_infos *user)
 {
 	FILE *stream;
@@ -83,10 +94,14 @@ int do_ls(const int com, char *cmd, t_user_infos *user)
 	size_t len = 0;
 	int socket = connect_to_client(com, user);
 
-	(void)cmd;
 	if (socket == FD_ERROR)
 		return (FAILURE);
-	stream = popen("ls --color", "r");
+
+	asprintf(&line, "ls --color %s", get_ls_path_name(cmd));
+	if (! line)
+		return (FCT_FAIL("asprintf"), ERROR);
+	stream = popen(line, "r");
+	free(line);
 	if (! stream)
 		return (FCT_FAIL("popen"), ERROR);
 	while (getline(&line, &len, stream) != -1)

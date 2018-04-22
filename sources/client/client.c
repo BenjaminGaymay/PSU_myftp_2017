@@ -8,59 +8,20 @@
 #include "client.h"
 #include "macro.h"
 
-int is_reply_end(const char *line)
+static int is_connect(const int com)
 {
-	int i = 0;
-	for ( ; line[i] && i < 3 ; i++)
-		if (isdigit(line[i]) == 0)
-			return (FAILURE);
-	return (line[i] == ' ' || line[i] == '\0' ? SUCCESS : FAILURE);
-}
-
-int server_open(const int com)
-{
-	int result;
-	socklen_t result_size;
-
-	result_size = sizeof(result);
-	getsockopt(com, SOL_SOCKET, SO_ERROR, &result, &result_size);
-	if (result != 0)
-		return (fprintf(stderr, "Error: server down\n"), ERROR);
-	return (SUCCESS);
-}
-
-int wait_reply(const int com, char **reply)
-{
-	size_t len = 0;
-	char *line = NULL;
-	FILE *file = fdopen(com, "r");
-
-	if (! file)
-		return (FCT_FAIL("fdopen"), ERROR);
-	if (server_open(com) == ERROR)
-		return (ERROR);
-	while (getline(&line, &len, file) && is_reply_end(line) == FAILURE) {
-		if (server_open(com) == ERROR)
-			return (ERROR);
-		if (line[0] != '\n')
-			write(1, line, strlen(line));
-	}
-
-	write(1, line, strlen(line));
-	if (line[3] == ' ') {
-		*reply = strdup(line);
-		line[3] = '\0';
-		return (atoi(line));
-	}
-	return (ERROR);
-
-}
-
-int client_loop(const int com)
-{
-	char *cmd;
 	char *reply;
 	int reply_state;
+
+	reply_state = wait_reply(com, &reply);
+	free(reply);
+	if (reply_state == ERROR || reply_state == 421)
+		return (FAILURE);
+	return (ERROR);
+}
+
+static t_data_transfert_info init_datas_transfert(const int com)
+{
 	t_data_transfert_info infos = {
 		NULL,
 		0,
@@ -69,23 +30,44 @@ int client_loop(const int com)
 		FD_ERROR,
 		NONE
 	};
-	reply_state = wait_reply(com, &reply);
-	if (reply_state == ERROR || reply_state == 421)
+
+	return (infos);
+}
+
+static int launch_cmd(const int com, t_data_transfert_info *infos)
+{
+	char *cmd;
+
+	cmd = get_command();
+	if (cmd == NULL)
 		return (ERROR);
-	free(reply);
-	while (1) {
-		cmd = get_command(com);
-		if (cmd == NULL)
-			return (ERROR);
-		reply_state = wait_reply(com, &reply);
-		if (reply_state == 221 || reply_state == ERROR)
-			return (reply_state);
-		else if (reply_state == FAILURE)
-			fprintf(stderr, "Error: %s: bad command\n", cmd);
-		else if (reply_state != 421 && make_command(cmd, reply, &infos) == ERROR)
-			return (ERROR);
+	if (is_client_cmd(cmd) == SUCCESS && exec_client_command(cmd) == ERROR)
+		return (ERROR);
+	else if (is_client_cmd(cmd) != SUCCESS) {
+		switch (make_command(com, cmd, infos)) {
+			case ERROR:
+				return (ERROR);
+			case 221:
+				return (EXIT);
+		}
 	}
 	return (SUCCESS);
+}
+
+static int client_loop(const int com)
+{
+	t_data_transfert_info infos = init_datas_transfert(com);
+
+	if (is_connect(com) == FAILURE)
+		return (ERROR);
+	while (1) {
+		switch (launch_cmd(com, &infos)) {
+			case ERROR:
+				return (ERROR);
+			case EXIT:
+				return (SUCCESS);
+		}
+	}
 }
 
 int main(const int ac, char **av)

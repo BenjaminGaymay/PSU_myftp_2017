@@ -13,9 +13,12 @@ CC	= gcc
 RM	= rm -f
 
 SRCS_CLIENT	= ./sources/client/client.c		\
+		  ./sources/client/manage_reply.c	\
+		  ./sources/client/ptr_fct.c		\
 		  ./sources/client/manage_commands.c	\
 		  ./sources/client/send_file.c		\
 		  ./sources/client/commands.c		\
+		  ./sources/client/local_commands.c	\
 		  ./sources/shared/basics.c		\
 		  ./sources/shared/socket.c
 

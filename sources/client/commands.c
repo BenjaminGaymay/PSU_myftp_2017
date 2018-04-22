@@ -31,7 +31,8 @@ int port(char *cmd, char *reply, t_data_transfert_info *infos)
 	(void)reply;
 	close(infos->serv_mode);
 	infos->port = port_1 * 256 + port_2;
-	infos->serv_mode = create_socket(infos->port, INADDR_ANY, SERVER, VERBOSE);
+	infos->serv_mode = create_socket(infos->port,
+		INADDR_ANY, SERVER, VERBOSE);
 	if (infos->serv_mode == FD_ERROR)
 		return (ERROR);
 	infos->transfert_mode = PORT;

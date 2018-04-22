@@ -10,26 +10,21 @@
 
 t_ptr_fct *get_cmd_ptr()
 {
-	static t_ptr_fct commands[19] = {
+	static t_ptr_fct commands[14] = {
 		{"USER", login, HELP_USER},
 		{"PASS", password, HELP_PASS},
 		{"CWD", do_cwd, HELP_CWD},
-		{"cd", do_cwd, ""},
 		{"CDUP", cdup, HELP_CDUP},
 		{"QUIT", exit_ftp, HELP_QUIT},
 		{"DELE", delete_file, HELP_DEL},
 		{"PWD", do_pwd, HELP_PWD},
-		{"pwd", do_pwd, ""},
 		{"PASV", pasv, HELP_PASV},
 		{"PORT", port, HELP_PORT},
 		{"HELP", show_help, HELP_HELP},
 		{"NOOP", noop, HELP_NOOP},
 		{"STOR", receive_file, HELP_STOR},
-		{"put", receive_file, ""},
 		{"RETR", send_file, HELP_RETR},
-		{"get", send_file, ""},
-		{"LIST", do_ls, HELP_LIST},
-		{"ls", do_ls, ""}
+		{"LIST", do_ls, HELP_LIST}
 	};
 
 	return (commands);
@@ -65,7 +60,7 @@ int get_command(const int com, t_user_infos *user)
 	if (! file)
 		return (FCT_FAIL("fdopen"), ERROR);
 	getline(&cmd, &len, file);
-	for (int i = 18 ; i >= 0 ; i--) {
+	for (int i = 13 ; i >= 0 ; i--) {
 		fct = commands[i];
 		cmd = clear_command(cmd);
 		if (strncasecmp(cmd, fct.name, strlen(fct.name)) == SUCCESS)

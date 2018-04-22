@@ -66,9 +66,9 @@ int show_help(const int com, char *cmd, t_user_infos *user)
 	t_ptr_fct *commands = get_cmd_ptr();
 
 	(void)user;
-	for (int i = 0 ; i < 19 ; i++) {
+	for (int i = 0 ; i < 14 ; i++) {
 		tmp = commands[i];
-		if (cmd[0] == '\0' && i == 13)
+		if (cmd[0] == '\0' && i == 11)
 			send_reply(com, HELP_DATA);
 		if (cmd[0] == '\0' || strncasecmp(cmd, tmp.name, strlen(tmp.name)) == SUCCESS)
 			send_reply(com, tmp.help);
