@@ -41,7 +41,8 @@ int find_free_port(t_user_infos *user)
 		port_1 = rand() % 256;
 		port_2 = rand() % 256;
 		user->datas_transfert_port = port_1 * 256 + port_2;
-		user->data_transfert_socket = create_socket(user->datas_transfert_port, INADDR_ANY, SERVER, QUIET);
+		user->data_transfert_socket = create_socket(
+			user->datas_transfert_port, INADDR_ANY, SERVER, QUIET);
 	}
 	return (port_2);
 }
@@ -54,7 +55,8 @@ char *generate_pasv_reply(t_user_infos *user, char *cpy_ip, int port_2)
 	cpy_ip = strdup(user->server_ip);
 	if (! cpy_ip)
 		return (FCT_FAIL("strdup"), NULL);
-	asprintf(&reply, "227 Entering Passive Mode (%s,%d,%d).\n", replace_char(cpy_ip, '.', ','), port_1 , port_2);
+	asprintf(&reply, "227 Entering Passive Mode (%s,%d,%d).\n",
+		replace_char(cpy_ip, '.', ','), port_1 , port_2);
 	if (! reply)
 		return (FCT_FAIL("asprintf"), NULL);
 	return (reply);

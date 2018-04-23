@@ -34,7 +34,8 @@ int c_socket(int fd, struct sockaddr_in *s_in)
 	return (fd);
 }
 
-int create_socket(const int port, const in_addr_t addr, e_socket_type s_t, int quiet)
+int create_socket(const int port, const in_addr_t addr,
+			e_socket_type s_t, int quiet)
 {
 	int fd;
 	struct protoent *pe;
@@ -49,5 +50,6 @@ int create_socket(const int port, const in_addr_t addr, e_socket_type s_t, int q
 	s_in.sin_family = AF_INET;
 	s_in.sin_port = htons(port);
 	s_in.sin_addr.s_addr = addr;
-	return (s_t == SERVER ? s_socket(fd, &s_in, quiet) : c_socket(fd, &s_in));
+	return (s_t == SERVER ? s_socket(fd, &s_in, quiet)
+				: c_socket(fd, &s_in));
 }

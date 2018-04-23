@@ -70,7 +70,8 @@ int show_help(const int com, char *cmd, t_user_infos *user)
 		tmp = commands[i];
 		if (cmd[0] == '\0' && i == 11)
 			send_reply(com, HELP_DATA);
-		if (cmd[0] == '\0' || strncasecmp(cmd, tmp.name, strlen(tmp.name)) == SUCCESS)
+		if (cmd[0] == '\0' || strncasecmp(cmd, tmp.name,
+				strlen(tmp.name)) == SUCCESS)
 			send_reply(com, tmp.help);
 	}
 	send_reply(com, HELP);

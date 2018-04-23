@@ -25,7 +25,8 @@ int password(const int com, char *pass, t_user_infos *user)
 	else if (user->connected == CONNECT)
 		return (send_reply(com, ALREADY_CONNECTED), FAILURE);
 	if (strcmp(user->login, "Anonymous") != SUCCESS)
-		return (user->connected = LOGIN, send_reply(com, BAD_LOG), FAILURE);
+		return (user->connected = LOGIN,
+			send_reply(com, BAD_LOG), FAILURE);
 	if (strcmp(pass, "") != SUCCESS)
 		return (send_reply(com, BAD_PASS), FAILURE);
 	user->connected = CONNECT;

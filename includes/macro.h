@@ -22,6 +22,12 @@
 
 #define FCT_FAIL(name) fprintf(stderr, "Error: %s failed\n", name)
 
+#define SOCKET_OPEN " > Client %s connected with datas transfert socket on port %d\n"
+#define SOCKET_CLOSE " < Data transfert socket closed for %s on port %d\n"
+#define RETR_LOGS "\t~ File \"%s\" sent to %s on port %d\n"
+#define STOR_LOGS "\t~ File \"%s\" received from %s on port %d\n"
+#define LIST_LOGS "\t~ List from current directory sent to %s on port %d\n"
+
 #define CONNECT_OPEN "150 File status okay; about to open data connection."
 #define CMD_OKAY "200 Command okay."
 #define HELP "214 Help message."

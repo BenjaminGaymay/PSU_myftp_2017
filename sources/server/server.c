@@ -26,9 +26,9 @@ char *get_host_ip(const int com)
 	return (inet_ntoa(server.sin_addr));
 }
 
-int one_client_loop(const int com, const struct sockaddr_in *client, int port, char *root)
+t_user_infos fill_user_infos(const struct sockaddr_in *client,
+		int port, char *root)
 {
-	int state;
 	t_user_infos new_user = {
 		root,
 		NULL,
@@ -42,6 +42,15 @@ int one_client_loop(const int com, const struct sockaddr_in *client, int port, c
 		NONE
 	};
 
+	return (new_user);
+}
+
+int one_client_loop(const int com, const struct sockaddr_in *client,
+		int port, char *root)
+{
+	int state;
+	t_user_infos new_user = fill_user_infos(client, port, root);
+
 	if (com == FD_ERROR)
 		return (FCT_FAIL("accept"), ERROR);
 	new_user.server_ip = get_host_ip(com);
@@ -54,8 +63,9 @@ int one_client_loop(const int com, const struct sockaddr_in *client, int port, c
 			return (ERROR);
 		else if (state == EXIT)
 			return (printf("[*] Client from %s:%d exited\n",
-					new_user.client_ip, new_user.client_port),
-					SUCCESS);
+					new_user.client_ip,
+					new_user.client_port),
+				SUCCESS);
 	}
 	return (SUCCESS);
 }
@@ -77,11 +87,8 @@ int server_loop(const int serv, const int port, char *root)
 			printf("[*] New connection from %s:%d\n",
 				inet_ntoa(client.sin_addr),
 				ntohs(client.sin_port));
-		else {
-			if (one_client_loop(com, &client, port, root) == ERROR)
-				return (safe_close(com, ERROR));
-			break;
-		}
+		else
+			return (one_client_loop(com, &client, port, root));
 
 	}
 	return (SUCCESS);
@@ -98,7 +105,8 @@ int main(const int ac, const char **av)
 		return (print_usage(ERROR));
 	path = realpath(av[2], NULL);
 	if (chdir(av[2]) == -1)
-		return (fprintf(stderr, "Error: %s: Bad path\n", av[2]), ERROR);
+		return (fprintf(stderr, "Error: %s: Bad path\n",
+				av[2]), ERROR);
 	srand(time(NULL));
 	serv = create_socket(atoi(av[1]), INADDR_ANY, SERVER, VERBOSE);
 	if (serv == FD_ERROR || server_loop(serv, atoi(av[1]), path) == ERROR)

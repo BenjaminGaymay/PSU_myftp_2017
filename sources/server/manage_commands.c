@@ -42,7 +42,8 @@ char *clear_command(char *cmd)
 
 int exec_command(const int com, t_user_infos *user, t_ptr_fct *fct, char *cmd)
 {
-	char *cmd_cpy = &cmd[strlen(fct->name) + (cmd[strlen(fct->name)] == ' ' ? 1 : 0)];
+	char *cmd_cpy = &cmd[strlen(fct->name) +
+		(cmd[strlen(fct->name)] == ' ' ? 1 : 0)];
 	int ret_value = fct->fct(com, cmd_cpy, user);
 
 	free(cmd);
