@@ -19,12 +19,13 @@ static int is_reply_end(const char *line)
 
 static int is_valid_reply(char *line, char **reply)
 {
+	int ret;
 	if (line[3] == ' ') {
-		*reply = strdup(line);
-		if (! *reply)
-			return (FCT_FAIL("strdup"), ERROR);
+		*reply = line;
 		line[3] = '\0';
-		return (atoi(line));
+		ret = atoi(line);
+		line[3] = ' ';
+		return (ret);
 	}
 	return (ERROR);
 }
@@ -45,18 +46,18 @@ int wait_reply(const int com, char **reply)
 {
 	size_t len = 0;
 	char *line = NULL;
-	FILE *file = fdopen(com, "r");
+	FILE *file = fdopen(dup(com), "r");
 
 	if (! file)
 		return (FCT_FAIL("fdopen"), ERROR);
 	if (server_open(com) == ERROR)
-		return (ERROR);
+		return (fclose(file), ERROR);
 	while (getline(&line, &len, file) && is_reply_end(line) == FAILURE) {
 		if (server_open(com) == ERROR)
-			return (ERROR);
+			return (fclose(file), free(line), ERROR);
 		if (line[0] != '\n')
 			write(1, line, strlen(line));
 	}
 	write(1, line, strlen(line));
-	return (is_valid_reply(line, reply));
+	return (fclose(file), is_valid_reply(line, reply));
 }

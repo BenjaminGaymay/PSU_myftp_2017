@@ -48,9 +48,10 @@ static int launch_cmd(const int com, t_data_transfert_info *infos)
 			case ERROR:
 				return (ERROR);
 			case 221:
-				return (EXIT);
+				return (free(cmd), EXIT);
 		}
 	}
+	free(cmd);
 	return (SUCCESS);
 }
 
@@ -63,8 +64,12 @@ static int client_loop(const int com)
 	while (1) {
 		switch (launch_cmd(com, &infos)) {
 			case ERROR:
+				if (infos.ip != NULL)
+					free(infos.ip);
 				return (ERROR);
 			case EXIT:
+				if (infos.ip != NULL)
+					free(infos.ip);
 				return (SUCCESS);
 		}
 	}

@@ -8,7 +8,7 @@
 NAME_SERVER	= server
 NAME_CLIENT	= my_ftp
 
-CC	= gcc
+CC	= gcc -g3
 
 RM	= rm -f
 

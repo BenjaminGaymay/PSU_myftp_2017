@@ -32,7 +32,7 @@ t_user_infos fill_user_infos(const struct sockaddr_in *client,
 	t_user_infos new_user = {
 		root,
 		NULL,
-		inet_ntoa(client->sin_addr),
+		strdup(inet_ntoa(client->sin_addr)),
 		port,
 		ntohs(client->sin_port),
 		FD_ERROR,
@@ -43,6 +43,16 @@ t_user_infos fill_user_infos(const struct sockaddr_in *client,
 	};
 
 	return (new_user);
+}
+
+int quit_client(t_user_infos *user)
+{
+	printf("[*] Client from %s:%d exited\n", user->client_ip,
+			user->client_port);
+	if (user->login != NULL)
+		free(user->login);
+	free(user->client_ip);
+	return (SUCCESS);
 }
 
 int one_client_loop(const int com, const struct sockaddr_in *client,
@@ -62,10 +72,7 @@ int one_client_loop(const int com, const struct sockaddr_in *client,
 		if (state == ERROR)
 			return (ERROR);
 		else if (state == EXIT)
-			return (printf("[*] Client from %s:%d exited\n",
-					new_user.client_ip,
-					new_user.client_port),
-				SUCCESS);
+			return (quit_client(&new_user));
 	}
 	return (SUCCESS);
 }
@@ -110,6 +117,7 @@ int main(const int ac, const char **av)
 	srand(time(NULL));
 	serv = create_socket(atoi(av[1]), INADDR_ANY, SERVER, VERBOSE);
 	if (serv == FD_ERROR || server_loop(serv, atoi(av[1]), path) == ERROR)
-		return (safe_close(serv, ERROR));
+		return (free(path), safe_close(serv, ERROR));
+	free(path);
 	return (safe_close(serv, SUCCESS));
 }

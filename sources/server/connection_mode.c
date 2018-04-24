@@ -24,6 +24,8 @@ int port(const int com, char *cmd, t_user_infos *user)
 		return (send_reply(com, NOT_CONNECTED), FAILURE);
 	printf(" ~ Active mode enable for datas transfert\n");
 	user->datas_transfert_port = port_1 * 256 + port_2;
+	if (user->client_ip != NULL)
+		free(user->client_ip);
 	user->client_ip = strdup(get_ip_from_cmd(cmd));
 	if (! user->client_ip)
 		return (send_reply(com, CONNECT_FAIL), FAILURE);
@@ -57,6 +59,7 @@ char *generate_pasv_reply(t_user_infos *user, char *cpy_ip, int port_2)
 		return (FCT_FAIL("strdup"), NULL);
 	asprintf(&reply, "227 Entering Passive Mode (%s,%d,%d).\n",
 		replace_char(cpy_ip, '.', ','), port_1 , port_2);
+	free(cpy_ip);
 	if (! reply)
 		return (FCT_FAIL("asprintf"), NULL);
 	return (reply);

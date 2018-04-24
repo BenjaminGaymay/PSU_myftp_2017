@@ -54,18 +54,20 @@ int get_command(const int com, t_user_infos *user)
 {
 	size_t len = 0;
 	char *cmd = NULL;
-	FILE *file = fdopen(com, "r");
+	FILE *file = fdopen(dup(com), "r");
 	t_ptr_fct fct;
 	t_ptr_fct *commands = get_cmd_ptr();
 
 	if (! file)
 		return (FCT_FAIL("fdopen"), ERROR);
 	getline(&cmd, &len, file);
+	fclose(file);
 	for (int i = 13 ; i >= 0 ; i--) {
 		fct = commands[i];
 		cmd = clear_command(cmd);
 		if (strncasecmp(cmd, fct.name, strlen(fct.name)) == SUCCESS)
 			return (exec_command(com, user, &fct, cmd));
 	}
+	free(cmd);
 	return (send_reply(com, BAD_CMD), FAILURE);
 }

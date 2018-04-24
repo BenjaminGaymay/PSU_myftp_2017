@@ -26,7 +26,7 @@ t_ptr_fct_cli *get_client_commands()
 {
 	static t_ptr_fct_cli commands_client[3] = {
 		{"ls", do_ls},
-		{"cd", do_cwd},
+		{"cd ", do_cwd},
 		{"pwd", do_pwd}
 	};
 

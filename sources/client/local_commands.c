@@ -15,7 +15,7 @@ int is_client_cmd(char *cmd)
 
 	for (int i = 0 ; i < 3 ; i++) {
 		tmp = commands_client[i];
-		if (strncmp(cmd, tmp.name, strlen(tmp.name)) == SUCCESS)
+		if (strncmp(tmp.name, cmd, strlen(tmp.name)) == SUCCESS)
 			return (SUCCESS);
 	}
 	return (FAILURE);
@@ -23,9 +23,11 @@ int is_client_cmd(char *cmd)
 
 int do_pwd(char *cmd)
 {
+	char *pwd = getcwd(NULL, 0);
 
 	(void)cmd;
-	printf("%s\n", getcwd(NULL, 0));
+	printf("%s\n", pwd);
+	free(pwd);
 	return (SUCCESS);
 }
 
@@ -47,6 +49,7 @@ int do_ls(char *cmd) {
 		return (FCT_FAIL("popen"), ERROR);
 	while (getline(&line, &len, stream) != -1)
 		printf("%s", line);
+	free(line);
 	if (pclose(stream) == -1)
 		return (FCT_FAIL("pclose"), ERROR);
 	return (SUCCESS);

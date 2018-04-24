@@ -52,9 +52,9 @@ int make_command(const int com, char *cmd, t_data_transfert_info *infos)
 		return (free(reply), reply_state);
 	for (int i = 0 ; i < 7 ; i++) {
 		tmp = commands_server[i];
-		if (strncasecmp(cmd, tmp.name, strlen(tmp.name)) == SUCCESS)
+		if (strncasecmp(tmp.name, cmd, strlen(tmp.name)) == SUCCESS)
 			return (tmp.fct(&cmd[strlen(tmp.name) + 1],
-					reply, infos));
+				reply, infos));
 	}
 	free(reply);
 	return (FAILURE);
@@ -67,7 +67,7 @@ int exec_client_command(char *cmd)
 
 	for (int i = 0 ; i < 3 ; i++) {
 		tmp = commands_client[i];
-		if (strncmp(cmd, tmp.name, strlen(tmp.name)) == SUCCESS)
+		if (strncmp(tmp.name, cmd, strlen(tmp.name)) == SUCCESS)
 			return (tmp.fct(&cmd[strlen(tmp.name) + 1]));
 	}
 	return (FAILURE);

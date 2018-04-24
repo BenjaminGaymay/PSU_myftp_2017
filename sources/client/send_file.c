@@ -46,6 +46,7 @@ int receive_cmd(char *cmd, char *reply, t_data_transfert_info *infos)
 		return (ERROR);
 	read_file(NULL, infos->data_transfert);
 	wait_reply(infos->com, &line);
+	free(reply);
 	return (free(line), SUCCESS);
 }
 
@@ -59,6 +60,7 @@ int receive_file(char *cmd, char *reply, t_data_transfert_info *infos)
 		return (ERROR);
 	create_file(cmd, infos->data_transfert);
 	wait_reply(infos->com, &line);
+	free(reply);
 	return (free(line), SUCCESS);
 }
 
@@ -79,5 +81,6 @@ int send_file(char *cmd, char *reply, t_data_transfert_info *infos)
 	close(infos->data_transfert);
 	wait_reply(infos->com, &tmp);
 	infos->data_transfert = FD_ERROR;
+	free(reply);
 	return (free(tmp), free(path), SUCCESS);
 }

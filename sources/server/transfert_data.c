@@ -111,5 +111,5 @@ int do_ls(const int com, char *cmd, t_user_infos *user)
 	if (pclose(stream) == -1)
 		return (FCT_FAIL("pclose"), ERROR);
 	printf(LIST_LOGS, user->server_ip, user->datas_transfert_port);
-	return (close_connection(com, socket, user));
+	return (free(line), close_connection(com, socket, user));
 }

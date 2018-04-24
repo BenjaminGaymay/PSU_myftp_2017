@@ -16,10 +16,13 @@ int pasv(char *cmd, char *reply, t_data_transfert_info *infos)
 	(void)cmd;
 	close(infos->serv_mode);
 	infos->port = port_1 * 256 + port_2;
+	if (infos->ip != NULL)
+		free(infos->ip);
 	infos->ip = strdup(get_ip_from_cmd(reply));
 	if (! infos->ip)
 		return (FCT_FAIL("strdup"), ERROR);
 	infos->transfert_mode = PASV;
+	free(reply);
 	return (SUCCESS);
 }
 
@@ -36,5 +39,6 @@ int port(char *cmd, char *reply, t_data_transfert_info *infos)
 	if (infos->serv_mode == FD_ERROR)
 		return (ERROR);
 	infos->transfert_mode = PORT;
+	free(reply);
 	return (SUCCESS);
 }

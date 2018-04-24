@@ -62,14 +62,13 @@ int read_file(const char *path, const int fd)
 			write(fd, line, strlen(line));
 	}
 	else {
-		file = fdopen(fd, "r");
+		file = fdopen(dup(fd), "r");
 		if (! file)
 			return (FCT_FAIL("fdopen"), ERROR);
 		while (getline(&line, &len, file) != -1)
 			write(1, line, strlen(line));
 	}
-	free(line);
-	return (SUCCESS);
+	return (free(line), fclose(file), SUCCESS);
 }
 
 int create_file(const char *path, const int fd)
@@ -79,12 +78,14 @@ int create_file(const char *path, const int fd)
 	char *line = NULL;
 	int file_fd;
 
-	stream = fdopen(fd, "r");
+	stream = fdopen(dup(fd), "r");
 	if (! stream)
 		return (FCT_FAIL("fdopen"), ERROR);
 	file_fd = open(path, O_WRONLY | O_CREAT, 0644);
 	while (getline(&line, &len, stream) != -1)
 		write(file_fd, line, strlen(line));
+	free(line);
+	fclose(stream);
 	close(file_fd);
 	return (SUCCESS);
 }

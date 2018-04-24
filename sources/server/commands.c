@@ -10,6 +10,8 @@
 
 int login(const int com, char *login, t_user_infos *user)
 {
+	if (user->login != NULL)
+		free(user->login);
 	user->login = strdup(login);
 	if (! user->login)
 		return (FCT_FAIL("strdup"), ERROR);
