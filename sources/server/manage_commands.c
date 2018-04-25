@@ -10,7 +10,7 @@
 
 t_ptr_fct *get_cmd_ptr()
 {
-	static t_ptr_fct commands[14] = {
+	static t_ptr_fct commands[15] = {
 		{"USER", login, HELP_USER},
 		{"PASS", password, HELP_PASS},
 		{"CWD", do_cwd, HELP_CWD},
@@ -22,6 +22,7 @@ t_ptr_fct *get_cmd_ptr()
 		{"PORT", port, HELP_PORT},
 		{"HELP", show_help, HELP_HELP},
 		{"NOOP", noop, HELP_NOOP},
+		{"TYPE", noop, ""},
 		{"STOR", receive_file, HELP_STOR},
 		{"RETR", send_file, HELP_RETR},
 		{"LIST", do_ls, HELP_LIST}
@@ -62,7 +63,7 @@ int get_command(const int com, t_user_infos *user)
 		return (FCT_FAIL("fdopen"), ERROR);
 	getline(&cmd, &len, file);
 	fclose(file);
-	for (int i = 13 ; i >= 0 ; i--) {
+	for (int i = 14 ; i >= 0 ; i--) {
 		fct = commands[i];
 		cmd = clear_command(cmd);
 		if (strncasecmp(cmd, fct.name, strlen(fct.name)) == SUCCESS)

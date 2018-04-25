@@ -77,7 +77,7 @@ int show_help(const int com, char *cmd, t_user_infos *user)
 	t_ptr_fct *commands = get_cmd_ptr();
 
 	(void)user;
-	for (int i = 0 ; i < 14 ; i++) {
+	for (int i = 0 ; i < 15 ; i++) {
 		tmp = commands[i];
 		if (cmd[0] == '\0' && i == 11)
 			send_reply(com, HELP_DATA);

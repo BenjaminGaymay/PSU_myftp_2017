@@ -30,10 +30,14 @@ typedef struct s_ptr_fct {
 
 int check_help(const char **);
 int print_usage(int);
+int one_client_loop(const int, const struct sockaddr_in *, int, char *);
 
 t_ptr_fct *get_cmd_ptr();
 void send_reply(const int, const char *);
 int get_command(const int, t_user_infos *);
+
+int connect_to_client(const int, t_user_infos *);
+int close_connection(const int, const int, t_user_infos *);
 
 int login(const int, char *, t_user_infos *);
 int password(const int, char *, t_user_infos *);
