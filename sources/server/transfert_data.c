@@ -56,7 +56,8 @@ int do_ls(const int com, char *cmd, t_user_infos *user)
 
 	if (socket == FD_ERROR)
 		return (FAILURE);
-	asprintf(&line, "ls --color %s", get_ls_path_name(cmd));
+	asprintf(&line, (cmd[0] ? "ls -l %s | sed 1d" : "ls -ld *"),
+			get_ls_path_name(cmd));
 	if (! line)
 		return (FCT_FAIL("asprintf"), ERROR);
 	stream = popen(line, "r");
@@ -65,8 +66,7 @@ int do_ls(const int com, char *cmd, t_user_infos *user)
 		return (FCT_FAIL("popen"), ERROR);
 	while (getline(&line, &len, stream) != -1)
 		write(socket, line, strlen(line));
-	if (pclose(stream) == -1)
-		return (FCT_FAIL("pclose"), ERROR);
+	pclose(stream);
 	printf(LIST_LOGS, user->server_ip, user->datas_transfert_port);
 	return (free(line), close_connection(com, socket, user));
 }

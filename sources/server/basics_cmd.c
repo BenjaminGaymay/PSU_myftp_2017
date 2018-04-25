@@ -79,7 +79,7 @@ int show_help(const int com, char *cmd, t_user_infos *user)
 	(void)user;
 	for (int i = 0 ; i < 15 ; i++) {
 		tmp = commands[i];
-		if (cmd[0] == '\0' && i == 11)
+		if (cmd[0] == '\0' && i == 12)
 			send_reply(com, HELP_DATA);
 		if (cmd[0] == '\0' || strncasecmp(cmd, tmp.name,
 				strlen(tmp.name)) == SUCCESS)
