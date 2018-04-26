@@ -8,7 +8,7 @@
 #include "server.h"
 #include "macro.h"
 
-t_ptr_fct *get_cmd_ptr()
+t_ptr_fct *get_cmd_ptr(void)
 {
 	static t_ptr_fct commands[15] = {
 		{"USER", login, HELP_USER},

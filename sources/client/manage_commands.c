@@ -30,7 +30,7 @@ static int communicate_with_server(const int com, char *cmd, char **reply)
 	return (wait_reply(com, reply));
 }
 
-char *get_command()
+char *get_command(void)
 {
 	size_t len = 0;
 	char *line = NULL;

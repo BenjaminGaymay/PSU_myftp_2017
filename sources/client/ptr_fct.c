@@ -7,7 +7,7 @@
 
 #include "client.h"
 
-t_ptr_fct_serv *get_server_commands()
+t_ptr_fct_serv *get_server_commands(void)
 {
 	static t_ptr_fct_serv commands_server[7] = {
 		{"STOR", send_file},
@@ -22,7 +22,7 @@ t_ptr_fct_serv *get_server_commands()
 	return (commands_server);
 }
 
-t_ptr_fct_cli *get_client_commands()
+t_ptr_fct_cli *get_client_commands(void)
 {
 	static t_ptr_fct_cli commands_client[3] = {
 		{"ls", do_ls},

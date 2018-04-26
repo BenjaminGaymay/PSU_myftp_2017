@@ -17,7 +17,7 @@ static void handle_sigint(int sign)
 	g_continue = FAILURE;
 }
 
-static void init_sigint_catch()
+static void init_sigint_catch(void)
 {
 	struct sigaction action;
 
