@@ -47,9 +47,11 @@ int make_command(const int com, char *cmd, t_data_transfert_info *infos)
 	t_ptr_fct_serv tmp;
 	t_ptr_fct_serv *commands_server = get_server_commands();
 	int reply_state = communicate_with_server(com, cmd, &reply);
+	int errors[5] = {ERROR, 221, 421, 500, 530};
 
-	if (reply_state == ERROR || reply_state == 421 || reply_state == 221)
-		return (free(reply), reply_state);
+	for (int i = 0 ; i < 5 ; i++)
+		if (errors[i] == reply_state)
+			return (free(reply), reply_state);
 	for (int i = 0 ; i < 7 ; i++) {
 		tmp = commands_server[i];
 		if (strncasecmp(tmp.name, cmd, strlen(tmp.name)) == SUCCESS)

@@ -5,8 +5,25 @@
 ** socket
 */
 
+#include <signal.h>
 #include "server.h"
 #include "macro.h"
+
+int g_continue = SUCCESS;
+
+static void handle_sigint(int sign)
+{
+	(void)sign;
+	g_continue = FAILURE;
+}
+
+static void init_sigint_catch()
+{
+	struct sigaction action;
+
+	action.sa_handler = handle_sigint;
+	sigaction(SIGINT, &action, NULL);
+}
 
 int server_loop(const int serv, const int port, char *root)
 {
@@ -18,18 +35,18 @@ int server_loop(const int serv, const int port, char *root)
 	while (1) {
 		client_size = sizeof(client);
 		com = accept(serv, (struct sockaddr *)&client, &client_size);
+		if (g_continue == FAILURE)
+			return (SUCCESS);
 		pid = fork();
 		if (pid == -1)
 			return (FCT_FAIL("fork"), safe_close(com, ERROR));
 		if (pid != 0)
 			printf("[*] New connection from %s:%d\n",
-				inet_ntoa(client.sin_addr),
-				ntohs(client.sin_port));
+			inet_ntoa(client.sin_addr), ntohs(client.sin_port));
 		else
 			return (one_client_loop(com, &client, port, root));
 		close(com);
 	}
-	return (SUCCESS);
 }
 
 int main(const int ac, const char **av)
@@ -37,6 +54,7 @@ int main(const int ac, const char **av)
 	int serv;
 	char *path;
 
+	init_sigint_catch();
 	if (check_help(av) == SUCCESS)
 		return (SUCCESS);
 	if (ac != 3)

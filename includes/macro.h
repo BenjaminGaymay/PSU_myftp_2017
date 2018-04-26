@@ -22,7 +22,8 @@
 
 #define FCT_FAIL(name) fprintf(stderr, "Error: %s failed\n", name)
 
-#define SOCKET_OPEN " > Client %s connected with datas transfert socket on port %d\n"
+#define SOCKET_OPEN " > Client %s connected with datas transfert " \
+			"socket on port %d\n"
 #define SOCKET_CLOSE " < Data transfert socket closed for %s on port %d\n"
 #define RETR_LOGS "\t~ File \"%s\" sent to %s on port %d\n"
 #define STOR_LOGS "\t~ File \"%s\" received from %s on port %d\n"
@@ -50,18 +51,27 @@
 #define BAD_LOG "530 Bad login."
 #define NOT_CONNECTED "530 You are not connected."
 
-#define HELP_USER "\tUSER <SP> <username> <CRLF>   : Specify user for authentication"
-#define HELP_PASS "\tPASS <SP> <password> <CRLF>   : Specify password for authentication"
+#define HELP_USER "\tUSER <SP> <username> <CRLF>   : Specify user for " \
+			"authentication"
+#define HELP_PASS "\tPASS <SP> <password> <CRLF>   : Specify password for " \
+			"authentication"
 #define HELP_CWD "\tCWD  <SP> <pathname> <CRLF>   : Change working directory"
-#define HELP_CDUP "\tCDUP <CRLF>                   : Change working directory to parent directory"
+#define HELP_CDUP "\tCDUP <CRLF>                   : Change working " \
+			"directory to parent directory"
 #define HELP_QUIT "\tQUIT <CRLF>                   : Disconnection"
 #define HELP_DEL "\tDELE <SP> <pathname> <CRLF>   : Delete file on the server"
 #define HELP_PWD "\tPWD  <CRLF>                   : Print working directory"
-#define HELP_PASV "\tPASV <CRLF>                   : Enable \"passive\" mode for data transfer"
-#define HELP_PORT "\tPORT <SP> <host-port> <CRLF>  : Enable \"active\" mode for data transfer"
+#define HELP_PASV "\tPASV <CRLF>                   : Enable \"passive\" " \
+			"mode for data transfer"
+#define HELP_PORT "\tPORT <SP> <host-port> <CRLF>  : Enable \"active\" " \
+			"mode for data transfer"
 #define HELP_HELP "\tHELP [<SP> <string>] <CRLF>   : List available commands"
 #define HELP_NOOP "\tNOOP <CRLF>                   : Do nothing"
-#define HELP_DATA "\r\n\t(the following are commands using data transfer)\r\n\r\n"
-#define HELP_RETR "\tRETR <SP> <pathname> <CRLF>   : Download file from server to client"
-#define HELP_STOR "\tSTOR <SP> <pathname> <CRLF>   : Upload file from client to server"
-#define HELP_LIST "\tLIST [<SP> <pathname>] <CRLF> : List files in the current working directory"
+#define HELP_DATA "\r\n\t(the following are commands using data " \
+			"transfer)\r\n\r\n"
+#define HELP_RETR "\tRETR <SP> <pathname> <CRLF>   : Download file from " \
+			"server to client"
+#define HELP_STOR "\tSTOR <SP> <pathname> <CRLF>   : Upload file from " \
+			"client to server"
+#define HELP_LIST "\tLIST [<SP> <pathname>] <CRLF> : List files in the " \
+			"current working directory"
