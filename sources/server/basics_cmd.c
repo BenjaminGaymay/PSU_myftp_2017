@@ -11,11 +11,13 @@
 int do_pwd(const int com, char *cmd, t_user_infos *user)
 {
 	char *reply;
+	char *pwd = getcwd(NULL, 0);
 
 	(void)cmd;
 	if (user->connected != CONNECT)
 		return (send_reply(com, NOT_CONNECTED), FAILURE);
-	asprintf(&reply, "257 \"%s\"\n", getcwd(NULL, 0));
+	asprintf(&reply, "257 \"%s\"", pwd);
+	free(pwd);
 	if (! reply)
 		return (FCT_FAIL("asprintf"), ERROR);
 	send_reply(com, reply);

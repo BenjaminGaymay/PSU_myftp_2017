@@ -57,7 +57,7 @@ char *generate_pasv_reply(t_user_infos *user, char *cpy_ip, int port_2)
 	cpy_ip = strdup(user->server_ip);
 	if (! cpy_ip)
 		return (FCT_FAIL("strdup"), NULL);
-	asprintf(&reply, "227 Entering Passive Mode (%s,%d,%d).\n",
+	asprintf(&reply, "227 Entering Passive Mode (%s,%d,%d).",
 		replace_char(cpy_ip, '.', ','), port_1 , port_2);
 	free(cpy_ip);
 	if (! reply)

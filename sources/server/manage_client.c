@@ -11,8 +11,7 @@
 void send_reply(const int com, const char *msg)
 {
 	write(com, msg, strlen(msg));
-	if (msg[strlen(msg)] != '\n')
-		write(com, "\n", 1);
+	write(com, "\r\n", 2);
 }
 
 static char *get_host_ip(const int com)
