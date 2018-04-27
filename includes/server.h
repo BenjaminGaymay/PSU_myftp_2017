@@ -36,7 +36,7 @@ t_ptr_fct *get_cmd_ptr();
 void send_reply(const int, const char *);
 int get_command(const int, t_user_infos *);
 
-int connect_to_client(const int, t_user_infos *);
+int connect_to_client(const int, t_user_infos *, const char *);
 int close_connection(const int, const int, t_user_infos *);
 
 int login(const int, char *, t_user_infos *);

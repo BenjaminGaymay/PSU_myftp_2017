@@ -10,7 +10,7 @@
 
 int receive_file(const int com, char *cmd, t_user_infos *user)
 {
-	int socket = connect_to_client(com, user);
+	int socket = connect_to_client(com, user, STOR_NCONNECT);
 
 	if (socket == FD_ERROR)
 		return (FAILURE);
@@ -22,7 +22,7 @@ int receive_file(const int com, char *cmd, t_user_infos *user)
 
 int send_file(const int com, char *cmd, t_user_infos *user)
 {
-	int socket = connect_to_client(com, user);
+	int socket = connect_to_client(com, user, NOT_CONNECTED);
 
 	if (socket == FD_ERROR)
 		return (FAILURE);
@@ -52,12 +52,12 @@ int do_ls(const int com, char *cmd, t_user_infos *user)
 	FILE *stream;
 	char *line = NULL;
 	size_t len = 0;
-	int socket = connect_to_client(com, user);
+	int socket = connect_to_client(com, user, NOT_CONNECTED);
 
 	if (socket == FD_ERROR)
 		return (FAILURE);
-	asprintf(&line, (cmd[0] ? "ls -l %s | sed 1d" : "ls -ld *"),
-			get_ls_path_name(cmd));
+	asprintf(&line, "ls -l %s | sed 1d", (cmd[0] ?
+			get_ls_path_name(cmd) : "."));
 	if (! line)
 		return (FCT_FAIL("asprintf"), ERROR);
 	stream = popen(line, "r");

@@ -47,22 +47,12 @@ int do_cwd(const int com, char *cmd, t_user_infos *user)
 
 int cdup(const int com, char *cmd, t_user_infos *user)
 {
-	char *old_pwd = getcwd(NULL, 0);
-	char *pwd;
-
 	(void)cmd;
 	if (user->connected != CONNECT)
 		return (send_reply(com, NOT_CONNECTED), FAILURE);
-	if (chdir("..") == -1)
-		return (send_reply(com, BAD_PATH), FAILURE);
-	pwd = getcwd(NULL, 0);
-	if (strncmp(user->root, pwd, strlen(user->root)) == 0)
-		return (free(old_pwd), free(pwd),
-			send_reply(com, FILE_OKAY), SUCCESS);
-	chdir(old_pwd);
-	free(old_pwd);
-	free(pwd);
-	return (send_reply(com, PERM_DENIED), FAILURE);
+	chdir("..");
+	send_reply(com, FILE_OKAY);
+	return (SUCCESS);
 }
 
 int noop(const int com, char *cmd, t_user_infos *user)

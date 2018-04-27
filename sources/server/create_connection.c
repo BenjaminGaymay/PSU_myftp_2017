@@ -28,12 +28,12 @@ static int get_data_transfert_socket(const int com, t_user_infos *user)
 	return (socket);
 }
 
-int connect_to_client(const int com, t_user_infos *user)
+int connect_to_client(const int com, t_user_infos *user, const char *reply)
 {
 	int socket;
 
 	if (user->connected != CONNECT)
-		return (send_reply(com, NOT_CONNECTED), FD_ERROR);
+		return (send_reply(com, reply), FD_ERROR);
 	if (user->transfert_mode == NONE)
 		return (send_reply(com, REQUEST_PORT), FD_ERROR);
 	socket = get_data_transfert_socket(com, user);

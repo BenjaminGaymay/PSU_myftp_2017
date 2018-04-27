@@ -40,7 +40,6 @@
 #define GOOD_LOGIN "331 User name okay, need password."
 #define NEED_ACC "332 Need account for login."
 #define BAD_PASS "421 Bad password."
-#define BAD_PATH "421 Bad path."
 #define REQUEST_PORT "421 PASV or PORT requested."
 #define ALREADY_CONNECTED "421 Already connected."
 #define CONNECT_FAIL "421 Connection failed."
@@ -50,6 +49,11 @@
 #define BAD_CMD "500 Bad command."
 #define BAD_LOG "530 Bad login."
 #define NOT_CONNECTED "530 You are not connected."
+#define BAD_PATH "550 Failed to change directory."
+#define FILE_UNWRITABLE "550 Requested action not taken. File unavailable " \
+		"(e.g., file not found, no access)."
+#define STOR_NCONNECT "532 Need account for storing files."
+
 
 #define HELP_USER "\tUSER <SP> <username> <CRLF>   : Specify user for " \
 			"authentication"

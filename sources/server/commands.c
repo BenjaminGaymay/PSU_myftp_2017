@@ -47,7 +47,9 @@ int delete_file(const int com, char *file, t_user_infos *user)
 {
 	if (user->connected != CONNECT)
 		return (send_reply(com, NOT_CONNECTED), FAILURE);
-	remove(file);
-	send_reply(com, FILE_OKAY);
+	if (access(file, W_OK) == 0 && remove(file) == 0)
+		send_reply(com, FILE_OKAY);
+	else
+		send_reply(com, FILE_UNWRITABLE);
 	return (SUCCESS);
 }
