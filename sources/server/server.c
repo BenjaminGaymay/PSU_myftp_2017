@@ -9,12 +9,19 @@
 #include "server.h"
 #include "macro.h"
 
-int g_continue = SUCCESS;
+static int continue_loop(int new, int save)
+{
+	static int old = SUCCESS;
+
+	if (save == 1)
+		old = new;
+	return (old);
+}
 
 static void handle_sigint(int sign)
 {
 	(void)sign;
-	g_continue = FAILURE;
+	continue_loop(FAILURE, 1);
 }
 
 static void init_sigint_catch(void)
@@ -35,7 +42,7 @@ int server_loop(const int serv, const int port, char *root)
 	while (1) {
 		client_size = sizeof(client);
 		com = accept(serv, (struct sockaddr *)&client, &client_size);
-		if (g_continue == FAILURE)
+		if (continue_loop(0, 0) == FAILURE)
 			return (SUCCESS);
 		pid = fork();
 		if (pid == -1)

@@ -60,8 +60,7 @@ int read_file(const char *path, const int fd)
 			return (FCT_FAIL("fopen"), ERROR);
 		while (getline(&line, &len, file) != -1)
 			write(fd, line, strlen(line));
-	}
-	else {
+	} else {
 		file = fdopen(dup(fd), "r");
 		if (! file)
 			return (FCT_FAIL("fdopen"), ERROR);
