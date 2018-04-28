@@ -28,7 +28,7 @@ int port(const int com, char *cmd, t_user_infos *user)
 		free(user->client_ip);
 	user->client_ip = strdup(get_ip_from_cmd(cmd));
 	if (! user->client_ip)
-		return (send_reply(com, CONNECT_FAIL), FAILURE);
+		return (send_reply(com, CONNECT_FAILED), FAILURE);
 	send_reply(com, CMD_OKAY);
 	user->transfert_mode = PORT;
 	return (SUCCESS);

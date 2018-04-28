@@ -16,15 +16,16 @@ static int get_data_transfert_socket(const int com, t_user_infos *user)
 
 	client_size = sizeof(client);
 	if (user->transfert_mode == PASV) {
-		send_reply(com, CONNECT_OPEN);
-		return (accept(user->data_transfert_socket,
-			(struct sockaddr *)&client, &client_size));
+		socket = accept(user->data_transfert_socket,
+				(struct sockaddr *)&client, &client_size);
+		send_reply(com, (socket == FD_ERROR ?
+				CONNECT_FAILED : CONNECT_OPEN));
+		return (socket);
 	}
 	socket = create_socket(user->datas_transfert_port,
 		inet_addr(user->client_ip), CLIENT, VERBOSE);
-	if (socket == FD_ERROR)
-		return (send_reply(com, CONNECT_FAIL), FAILURE);
-	send_reply(com, CONNECT_OPEN);
+	send_reply(com, (socket == FD_ERROR ?
+			CONNECT_FAILED : CONNECT_OPEN));
 	return (socket);
 }
 

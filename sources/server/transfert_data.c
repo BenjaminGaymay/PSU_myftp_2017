@@ -47,11 +47,12 @@ int do_ls(const int com, char *cmd, t_user_infos *user)
 		return (FAILURE);
 	asprintf(&line, "ls -l %s | sed 1d", (cmd[0] ? cmd : "."));
 	if (! line)
-		return (FCT_FAIL("asprintf"), ERROR);
+		return (FCT_FAIL("asprintf"),
+			send_reply(com, LOCAL_ERR), ERROR);
 	stream = popen(line, "r");
 	free(line);
 	if (! stream)
-		return (FCT_FAIL("popen"), ERROR);
+		return (FCT_FAIL("popen"), send_reply(com, LOCAL_ERR), ERROR);
 	while (getline(&line, &len, stream) != -1)
 		write(socket, line, strlen(line));
 	pclose(stream);
