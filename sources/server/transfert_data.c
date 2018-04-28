@@ -15,7 +15,7 @@ int receive_file(const int com, char *cmd, t_user_infos *user)
 	if (socket == FD_ERROR)
 		return (FAILURE);
 	if (create_file(cmd, socket) == ERROR)
-		return (send_reply(com, FILE_ERROR), FAILURE);
+		return (send_reply(com, FILE_UNWRITABLE), FAILURE);
 	printf(STOR_LOGS, cmd, user->server_ip, user->datas_transfert_port);
 	return (close_connection(com, socket, user));
 }
@@ -36,17 +36,6 @@ int send_file(const int com, char *cmd, t_user_infos *user)
 	return (close_connection(com, socket, user));
 }
 
-char *get_ls_path_name(char *cmd)
-{
-	int i = 0;
-
-	for ( ; cmd[i] ; i++)
-		if (cmd[i] == ';' || cmd[i] == ' ')
-			break;
-	cmd[i] = '\0';
-	return (cmd);
-}
-
 int do_ls(const int com, char *cmd, t_user_infos *user)
 {
 	FILE *stream;
@@ -56,8 +45,7 @@ int do_ls(const int com, char *cmd, t_user_infos *user)
 
 	if (socket == FD_ERROR)
 		return (FAILURE);
-	asprintf(&line, "ls -l %s | sed 1d", (cmd[0] ?
-			get_ls_path_name(cmd) : "."));
+	asprintf(&line, "ls -l %s | sed 1d", (cmd[0] ? cmd : "."));
 	if (! line)
 		return (FCT_FAIL("asprintf"), ERROR);
 	stream = popen(line, "r");
