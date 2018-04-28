@@ -20,17 +20,17 @@ char *replace_char(char *str, const char old, const char new)
 char *get_ip_from_cmd(char *cmd)
 {
 	int i = 0;
-	int start = 0;
+	int start = strlen(cmd) - 1;
 	int coma = 0;
 
-	while (cmd[start] && cmd[start] != '(')
-		start += 1;
-	for (i = start + 1 ; cmd[i] && coma != 4 ; i++) {
+	while (start > 0 && cmd[start - 1] != '(')
+		start -= 1;
+	for (i = start ; cmd[i] && coma != 4 ; i++) {
 		if (cmd[i] == ',')
 			coma += 1;
 	}
 	cmd[i - 1] = '\0';
-	return (replace_char(&cmd[start + 1], ',', '.'));
+	return (replace_char(&cmd[start], ',', '.'));
 }
 
 int get_port_from_cmd(char *cmd, int pos)
